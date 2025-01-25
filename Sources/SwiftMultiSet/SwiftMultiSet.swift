@@ -1,15 +1,36 @@
 
+/// A [MultiSet](https://en.wikipedia.org/wiki/Multiset) that represents a set of `Element`s.
+/// A `MuliSet` behaves much like a `Set` except duplicates are permitted.
+/// Duplicates are determined by the `Element`'s conformance to `Equatable` and `Hashable`.
+///
+/// The primary operations of `insert(_: count:)`, `remove(_: count:)`, and `contains(_:)` are O(1).
+///
+/// Maintinaing any information beyond the element's conformance `Hashable` is not guarenteed.
+/// For example, if `Element` is a class, the elements' identities (determined with `===`) may not be maintained.
+///
+/// Conforms to `Sequence`, `ExpressibleByArrayLiteral`, `Equatable`, and `Hashable`.
+/// Conditionally conforms to `Sendable` when `Element` is `Sendable`.
 public struct MultiSet<Element: Hashable> {
 	
+	/// The total count of elements in the `MultiSet`, including duplicates.
+	///
+	/// Use `distintCount` for the count ingnoring duplicates.
+	/// Time Complexity: O(1)
 	public private(set) var count: Int
 	
 	private var _counts: [Element: Int]
 	
+	/// Initializes an empty `Multiset` from another `Sequence`.
+	///
+	/// Time Complexity: O(1)
 	public init() {
 		self.count = 0
 		self._counts = [:]
 	}
 	
+	/// Initializes a `Multiset` from another `Sequence`.
+	///
+	/// Time Complexity: O(n)
 	public init(_ elements: some Sequence<Element>) {
 		self.init()
 		for element in elements {
@@ -17,16 +38,40 @@ public struct MultiSet<Element: Hashable> {
 		}
 	}
 	
+	/// Inserts `count` copies of `element`s into the `MultiSet` .
+	///
+	/// `count` defaults to `1` and must be non-negative.
+	/// Time Complexity: O(1)
 	public mutating func insert(_ element: Element, count: Int = 1) {
 		precondition(count >= 0)
 		self[element] += count
 	}
 	
+	/// Removes `count` copies of `element`s from the `MultiSet` .
+	///
+	/// `count` defaults to `1` and must be non-negative.
+	/// Removing more of an `element` than the `MultiSet` contains will result in a precondition failure.
+	/// Time Complexity: O(1)
 	public mutating func remove(_ element: Element, count: Int = 1) {
+		precondition(count >= 0)
 		precondition(self[element] >= count)
 		self[element] -= count
 	}
 	
+	/// Returns if the `MultiSet` contains `count` copies of `element`s .
+	///
+	/// `count` defaults to `1` and must be non-negative.
+	/// Time Complexity: O(1)
+	public func contains(_ element: Element, count: Int = 1) -> Bool {
+		precondition(count >= 0)
+		return self[element] >= count
+	}
+	
+	/// Gets the number of duplicates of `element` in the `Multiset`.
+	///
+	/// The result will be `0` if `self` does not contain `element`.
+	/// The result will never be negative.
+	/// Time Complexity: O(1)
 	public subscript(element: Element) -> Int {
 		_read {
 			yield self._counts[element, default: 0]
@@ -47,8 +92,21 @@ public struct MultiSet<Element: Hashable> {
 
 extension MultiSet {
 	
+	/// Whether the `MutliSet` contains any elements.
+	///
+	/// Time Complexity: O(1)
 	public var isEmpty: Bool { count == 0 }
+	
+	/// The count of distinct elements in the `MultiSet`, ingnoring duplicates.
+	///
+	/// Use `count` for the count including duplicates.
+	/// Time Complexity: O(1)
 	public var distintCount: Int { _counts.count }
+	
+	/// A `Sequence` of the distinct elements of the `MultiSet`.
+	///
+	/// This will contain `distintCount` elements.
+	/// Time Complexity: O(1)
 	public var distintElements: some Sequence<Element> { _counts.keys }
 	
 }
@@ -59,6 +117,7 @@ extension MultiSet: Sequence {
 		return Iterator(self)
 	}
 	
+	/// An iterator for a `MutliSet`.
 	public struct Iterator: IteratorProtocol {
 		
 		private var dictionaryIterator: [Element: Int].Iterator
@@ -89,37 +148,35 @@ extension MultiSet: Sequence {
 
 extension MultiSet: ExpressibleByArrayLiteral {
 	
+	/// Initializes a `MultiSet` from an array literal.
+	///
+	/// Time Complexity: O(n)
 	public init(arrayLiteral elements: Element...) {
 		self.init(elements)
 	}
 	
 }
 
-extension MultiSet: Equatable {
-	
-	public static func == (lhs: MultiSet<Element>, rhs: MultiSet<Element>) -> Bool {
-		guard lhs.count == rhs.count else { return false }
-		guard lhs.distintCount == rhs.distintCount else { return false }
-		for element in lhs.distintElements {
-			if lhs[element] != rhs[element] { return false }
-		}
-		return true
-	}
-	
-}
+extension MultiSet: Equatable { }
 
 extension MultiSet: Hashable { }
 
 extension MultiSet {
 	
+	/// Returns a `MultiSet` that represents the union of `self` and `other`.
+	///
+	/// The result contains the maximum number of duplicates of an element in either `self` or `other`.
+	/// Time Complexity: O(self.distinctCount + other.distinctCount)
 	public func union(_ other: MultiSet<Element>) -> MultiSet<Element> {
 		var union = self
-		for element in other.distintElements {
-			union[element] = Swift.max(self[element], other[element])
-		}
+		union.formUnion(other)
 		return union
 	}
 	
+	/// Returns a `MultiSet` that represents the intersection of `self` and `other`.
+	///
+	/// The result contains the minimum number of duplicates of an element in either `self` or `other`.
+	/// Time Complexity: O(other.distinctCount)
 	public func intersection(_ other: MultiSet<Element>) -> MultiSet<Element> {
 		var intersection = MultiSet<Element>()
 		for element in other.distintElements {
@@ -128,10 +185,20 @@ extension MultiSet {
 		return intersection
 	}
 	
+	/// Mutates `self`to become the union of `self` and `other`.
+	///
+	/// `self` will contain the maximum number of duplicates of an element in either `self` or `other`.
+	/// Time Complexity: O(other.distinctCount)
 	public mutating func formUnion(_ other: MultiSet<Element>) {
-		self = self.union(other)
+		for element in other.distintElements {
+			self[element] = Swift.max(self[element], other[element])
+		}
 	}
 	
+	/// Mutates `self` to become the intersection of `self` and `other`.
+	///
+	/// `self` will contain the minimum number of duplicates of an element in either `self` or `other`.
+	/// Time Complexity: O(self.distinctCount + other.distinctCount)
 	public mutating func formIntersection(_ other: MultiSet<Element>) {
 		self = self.intersection(other)
 	}
@@ -146,10 +213,4 @@ extension MultiSet: CustomStringConvertible {
 	
 }
 
-private extension Dictionary {
-	
-	func sorted<T: Comparable>(by mapping: (Element) -> T) -> [Element] {
-		return self.sorted(by: { mapping($0) < mapping($1) })
-	}
-	
-}
+extension MultiSet: Sendable where Element: Sendable { }

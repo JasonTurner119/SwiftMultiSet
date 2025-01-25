@@ -41,7 +41,7 @@ import Testing
 @Test func iteration() async throws {
 	let set: MultiSet = [1, 5, 2, 7, 4, 2]
 	let array = Array(set)
-	#expect(array.count == 7)
+	#expect(array.count == 6)
 	#expect(MultiSet(array) == set)
 	let other = set.map { $0 }
 	#expect(array.sorted() == other.sorted())
