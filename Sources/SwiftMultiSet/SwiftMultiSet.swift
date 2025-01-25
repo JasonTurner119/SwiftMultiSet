@@ -14,7 +14,7 @@ public struct MultiSet<Element: Hashable> {
 	
 	/// The total count of elements in the `MultiSet`, including duplicates.
 	///
-	/// Use `distintCount` for the count ingnoring duplicates.
+	/// Use `distinctCount` for the count ingnoring duplicates.
 	/// Time Complexity: O(1)
 	public private(set) var count: Int
 	
@@ -101,13 +101,13 @@ extension MultiSet {
 	///
 	/// Use `count` for the count including duplicates.
 	/// Time Complexity: O(1)
-	public var distintCount: Int { _counts.count }
+	public var distinctCount: Int { _counts.count }
 	
 	/// A `Sequence` of the distinct elements of the `MultiSet`.
 	///
 	/// This will contain `distintCount` elements.
 	/// Time Complexity: O(1)
-	public var distintElements: some Sequence<Element> { _counts.keys }
+	public var distinctElements: some Sequence<Element> { _counts.keys }
 	
 }
 
@@ -179,7 +179,7 @@ extension MultiSet {
 	/// Time Complexity: O(other.distinctCount)
 	public func intersection(_ other: MultiSet<Element>) -> MultiSet<Element> {
 		var intersection = MultiSet<Element>()
-		for element in other.distintElements {
+		for element in other.distinctElements {
 			intersection[element] = Swift.min(self[element], other[element])
 		}
 		return intersection
@@ -190,7 +190,7 @@ extension MultiSet {
 	/// `self` will contain the maximum number of duplicates of an element in either `self` or `other`.
 	/// Time Complexity: O(other.distinctCount)
 	public mutating func formUnion(_ other: MultiSet<Element>) {
-		for element in other.distintElements {
+		for element in other.distinctElements {
 			self[element] = Swift.max(self[element], other[element])
 		}
 	}

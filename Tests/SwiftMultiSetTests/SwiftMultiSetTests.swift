@@ -11,22 +11,22 @@ import Testing
 
 @Test func insertionDeletion() async throws {
 	var set: MultiSet<Int> = []
-	#expect(set.count == 0 && set.distintCount == 0)
+	#expect(set.count == 0 && set.distinctCount == 0)
 	set.insert(23)
 	set.insert(100, count: 10)
-	#expect(set.count == 11 && set.distintCount == 2)
+	#expect(set.count == 11 && set.distinctCount == 2)
 	set.remove(100, count: 9)
 	set.insert(23, count: 2)
-	#expect(set.count == 4 && set.distintCount == 2)
+	#expect(set.count == 4 && set.distinctCount == 2)
 	set.remove(100)
 	set.remove(23)
 	set.remove(23, count: 2)
-	#expect(set.count == 0 && set.distintCount == 0)
+	#expect(set.count == 0 && set.distinctCount == 0)
 }
 
 @Test func subscripting() async throws {
 	var set: MultiSet<Int> = []
-	#expect(set.count == 0 && set.distintCount == 0)
+	#expect(set.count == 0 && set.distinctCount == 0)
 	set.insert(23)
 	#expect(set[23] == 1)
 	#expect(set[24] == 0)
@@ -78,7 +78,7 @@ import Testing
 	let intersection = first.intersection(second)
 	#expect(intersection == [])
 	#expect(intersection.count == 0)
-	#expect(intersection.distintCount == 0)
+	#expect(intersection.distinctCount == 0)
 }
 
 @Test func noIntersection() async throws {
@@ -87,7 +87,7 @@ import Testing
 	let intersection = first.intersection(second)
 	#expect(intersection == [])
 	#expect(intersection.count == 0)
-	#expect(intersection.distintCount == 0)
+	#expect(intersection.distinctCount == 0)
 }
 
 @Test func partialIntersection() async throws {
@@ -96,7 +96,7 @@ import Testing
 	let intersection = first.intersection(second)
 	#expect(intersection == [1, 2, 3, 3])
 	#expect(intersection.count == 4)
-	#expect(intersection.distintCount == 3)
+	#expect(intersection.distinctCount == 3)
 }
 
 @Test func totalIntersection() async throws {
@@ -105,7 +105,7 @@ import Testing
 	let intersection = first.intersection(second)
 	#expect(intersection == [1, 2, 2, 3, 3, 5, 9])
 	#expect(intersection.count == 7)
-	#expect(intersection.distintCount == 5)
+	#expect(intersection.distinctCount == 5)
 }
 
 @Test func formEmptySetIntersection() async throws {
@@ -114,7 +114,7 @@ import Testing
 	first.formIntersection(second)
 	#expect(first == [])
 	#expect(first.count == 0)
-	#expect(first.distintCount == 0)
+	#expect(first.distinctCount == 0)
 }
 
 @Test func formNoIntersection() async throws {
@@ -123,7 +123,7 @@ import Testing
 	first.formIntersection(second)
 	#expect(first == [])
 	#expect(first.count == 0)
-	#expect(first.distintCount == 0)
+	#expect(first.distinctCount == 0)
 }
 
 @Test func formPartialIntersection() async throws {
@@ -132,7 +132,7 @@ import Testing
 	first.formIntersection(second)
 	#expect(first == [1, 2, 3, 3])
 	#expect(first.count == 4)
-	#expect(first.distintCount == 3)
+	#expect(first.distinctCount == 3)
 }
 
 @Test func formTotalIntersection() async throws {
@@ -141,7 +141,7 @@ import Testing
 	first.formIntersection(second)
 	#expect(first == [1, 2, 2, 3, 3, 5, 9])
 	#expect(first.count == 7)
-	#expect(first.distintCount == 5)
+	#expect(first.distinctCount == 5)
 }
 
 // MARK: Union
@@ -152,7 +152,7 @@ import Testing
 	let intersection = first.union(second)
 	#expect(intersection == [])
 	#expect(intersection.count == 0)
-	#expect(intersection.distintCount == 0)
+	#expect(intersection.distinctCount == 0)
 }
 
 @Test func nonOverlappingUnion() async throws {
@@ -161,7 +161,7 @@ import Testing
 	let intersection = first.union(second)
 	#expect(intersection == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 	#expect(intersection.count == 10)
-	#expect(intersection.distintCount == 10)
+	#expect(intersection.distinctCount == 10)
 }
 
 @Test func partiallyOverlappingUnion() async throws {
@@ -170,7 +170,7 @@ import Testing
 	let intersection = first.union(second)
 	#expect(intersection == [1, 2, 2, 3, 3, 5, 9])
 	#expect(intersection.count == 7)
-	#expect(intersection.distintCount == 5)
+	#expect(intersection.distinctCount == 5)
 }
 
 @Test func totallyOverlappingUnion() async throws {
@@ -179,7 +179,7 @@ import Testing
 	let intersection = first.union(second)
 	#expect(intersection == [1, 2, 2, 3, 3, 5, 9])
 	#expect(intersection.count == 7)
-	#expect(intersection.distintCount == 5)
+	#expect(intersection.distinctCount == 5)
 }
 
 @Test func formEmptySetUnion() async throws {
@@ -188,7 +188,7 @@ import Testing
 	first.formUnion(second)
 	#expect(first == [])
 	#expect(first.count == 0)
-	#expect(first.distintCount == 0)
+	#expect(first.distinctCount == 0)
 }
 
 @Test func formNonOverlappingUnion() async throws {
@@ -197,7 +197,7 @@ import Testing
 	first.formUnion(second)
 	#expect(first == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 	#expect(first.count == 10)
-	#expect(first.distintCount == 10)
+	#expect(first.distinctCount == 10)
 }
 
 @Test func formPartiallyOverlappingUnion() async throws {
@@ -206,7 +206,7 @@ import Testing
 	first.formUnion(second)
 	#expect(first == [1, 2, 2, 3, 3, 5, 9])
 	#expect(first.count == 7)
-	#expect(first.distintCount == 5)
+	#expect(first.distinctCount == 5)
 }
 
 @Test func formTotallyOverlappingUnion() async throws {
@@ -215,5 +215,5 @@ import Testing
 	first.formUnion(second)
 	#expect(first == [1, 2, 2, 3, 3, 5, 9])
 	#expect(first.count == 7)
-	#expect(first.distintCount == 5)
+	#expect(first.distinctCount == 5)
 }
