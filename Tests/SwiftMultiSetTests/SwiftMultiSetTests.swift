@@ -38,6 +38,15 @@ import Testing
 	#expect(set[23] == 11)
 }
 
+@Test func iteration() async throws {
+	let set: MultiSet = [1, 5, 2, 7, 4, 2]
+	let array = Array(set)
+	#expect(array.count == 7)
+	#expect(MultiSet(array) == set)
+	let other = set.map { $0 }
+	#expect(array.sorted() == other.sorted())
+}
+
 // MARK: Equatable & Hashable
 
 @Test func equatableNoDuplicates() async throws {
