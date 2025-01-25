@@ -2,8 +2,6 @@
 public struct MultiSet<Element: Hashable> {
 	
 	public private(set) var count: Int
-	public var isEmpty: Bool { count == 0 }
-	public var distintCount: Int { _counts.count }
 	
 	private var _counts: [Element: Int]
 	
@@ -44,6 +42,14 @@ public struct MultiSet<Element: Hashable> {
 			}
 		}
 	}
+	
+}
+
+extension MultiSet {
+	
+	public var isEmpty: Bool { count == 0 }
+	public var distintCount: Int { _counts.count }
+	public var distintElements: some Sequence<Element> { _counts.keys }
 	
 }
 
@@ -94,7 +100,7 @@ extension MultiSet: Equatable {
 	public static func == (lhs: MultiSet<Element>, rhs: MultiSet<Element>) -> Bool {
 		guard lhs.count == rhs.count else { return false }
 		guard lhs.distintCount == rhs.distintCount else { return false }
-		for element in lhs._counts.keys {
+		for element in lhs.distintElements {
 			if lhs[element] != rhs[element] { return false }
 		}
 		return true
@@ -108,7 +114,7 @@ extension MultiSet {
 	
 	public func union(_ other: MultiSet<Element>) -> MultiSet<Element> {
 		var union = self
-		for element in other._counts.keys {
+		for element in other.distintElements {
 			union[element] = Swift.max(self[element], other[element])
 		}
 		return union
@@ -116,7 +122,7 @@ extension MultiSet {
 	
 	public func intersection(_ other: MultiSet<Element>) -> MultiSet<Element> {
 		var intersection = MultiSet<Element>()
-		for element in other._counts.keys {
+		for element in other.distintElements {
 			intersection[element] = Swift.min(self[element], other[element])
 		}
 		return intersection
