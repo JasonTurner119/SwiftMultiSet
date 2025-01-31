@@ -28,14 +28,14 @@ import Testing
 	var set: MultiSet<Int> = []
 	#expect(set.count == 0 && set.distinctCount == 0)
 	set.insert(23)
-	#expect(set[23] == 1)
-	#expect(set[24] == 0)
+	#expect(set[countOf: 23] == 1)
+	#expect(set[countOf: 24] == 0)
 	set.insert(100, count: 10)
-	#expect(set[100] == 10)
-	set[100] = 0
-	set[23] += 10
-	#expect(set[100] == 0)
-	#expect(set[23] == 11)
+	#expect(set[countOf: 100] == 10)
+	set[countOf: 100] = 0
+	set[countOf: 23] += 10
+	#expect(set[countOf: 100] == 0)
+	#expect(set[countOf: 23] == 11)
 }
 
 @Test func iteration() async throws {

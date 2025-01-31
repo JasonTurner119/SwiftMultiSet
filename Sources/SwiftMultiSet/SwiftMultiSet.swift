@@ -44,7 +44,7 @@ public struct MultiSet<Element: Hashable> {
 	/// Time Complexity: O(1)
 	public mutating func insert(_ element: Element, count: Int = 1) {
 		precondition(count >= 0)
-		self[element] += count
+		self[countOf: element] += count
 	}
 	
 	/// Removes `count` copies of `element`s from the `MultiSet` .
@@ -54,8 +54,8 @@ public struct MultiSet<Element: Hashable> {
 	/// Time Complexity: O(1)
 	public mutating func remove(_ element: Element, count: Int = 1) {
 		precondition(count >= 0)
-		precondition(self[element] >= count)
-		self[element] -= count
+		precondition(self[countOf: element] >= count)
+		self[countOf: element] -= count
 	}
 	
 	/// Returns if the `MultiSet` contains `count` copies of `element`s .
@@ -64,7 +64,7 @@ public struct MultiSet<Element: Hashable> {
 	/// Time Complexity: O(1)
 	public func contains(_ element: Element, count: Int = 1) -> Bool {
 		precondition(count >= 0)
-		return self[element] >= count
+		return self[countOf: element] >= count
 	}
 	
 	/// Gets the number of duplicates of `element` in the `Multiset`.
@@ -72,7 +72,7 @@ public struct MultiSet<Element: Hashable> {
 	/// The result will be `0` if `self` does not contain `element`.
 	/// The result will never be negative.
 	/// Time Complexity: O(1)
-	public subscript(element: Element) -> Int {
+	public subscript(countOf element: Element) -> Int {
 		_read {
 			yield self._counts[element, default: 0]
 		}
@@ -180,7 +180,7 @@ extension MultiSet {
 	public func intersection(_ other: MultiSet<Element>) -> MultiSet<Element> {
 		var intersection = MultiSet<Element>()
 		for element in other.distinctElements {
-			intersection[element] = Swift.min(self[element], other[element])
+			intersection[countOf: element] = Swift.min(self[countOf: element], other[countOf: element])
 		}
 		return intersection
 	}
@@ -191,7 +191,7 @@ extension MultiSet {
 	/// Time Complexity: O(other.distinctCount)
 	public mutating func formUnion(_ other: MultiSet<Element>) {
 		for element in other.distinctElements {
-			self[element] = Swift.max(self[element], other[element])
+			self[countOf: element] = Swift.max(self[countOf: element], other[countOf: element])
 		}
 	}
 	
