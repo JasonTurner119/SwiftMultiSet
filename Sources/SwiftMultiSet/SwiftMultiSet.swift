@@ -18,14 +18,14 @@ public struct MultiSet<Element: Hashable> {
 	/// Time Complexity: O(1)
 	public private(set) var count: Int
 	
-	private var _counts: [Element: Int]
+	private var elementCounts: [Element: Int]
 	
 	/// Initializes an empty `Multiset` from another `Sequence`.
 	///
 	/// Time Complexity: O(1)
 	public init() {
 		self.count = 0
-		self._counts = [:]
+		self.elementCounts = [:]
 	}
 	
 	/// Initializes a `Multiset` from another `Sequence`.
@@ -74,16 +74,16 @@ public struct MultiSet<Element: Hashable> {
 	/// Time Complexity: O(1)
 	public subscript(countOf element: Element) -> Int {
 		_read {
-			yield self._counts[element, default: 0]
+			yield self.elementCounts[element, default: 0]
 		}
 		_modify {
-			let oldValue = self._counts[element, default: 0]
-			yield &self._counts[element, default: 0]
-			let newValue = self._counts[element, default: 0]
+			let oldValue = self.elementCounts[element, default: 0]
+			yield &self.elementCounts[element, default: 0]
+			let newValue = self.elementCounts[element, default: 0]
 			precondition(newValue >= 0)
 			self.count += (newValue - oldValue)
-			if self._counts[element] == 0 {
-				self._counts[element] = nil
+			if self.elementCounts[element] == 0 {
+				self.elementCounts[element] = nil
 			}
 		}
 	}
@@ -101,13 +101,13 @@ extension MultiSet {
 	///
 	/// Use `count` for the count including duplicates.
 	/// Time Complexity: O(1)
-	public var distinctCount: Int { _counts.count }
+	public var distinctCount: Int { elementCounts.count }
 	
 	/// A `Sequence` of the distinct elements of the `MultiSet`.
 	///
 	/// This will contain `distintCount` elements.
 	/// Time Complexity: O(1)
-	public var distinctElements: some Sequence<Element> { _counts.keys }
+	public var distinctElements: some Sequence<Element> { elementCounts.keys }
 	
 }
 
@@ -124,7 +124,7 @@ extension MultiSet: Sequence {
 		private var current: (element: Element, remaining: Int)?
 		
 		fileprivate init(_ multiSet: MultiSet) {
-			self.dictionaryIterator = multiSet._counts.makeIterator()
+			self.dictionaryIterator = multiSet.elementCounts.makeIterator()
 			self.current = nil
 		}
 		
@@ -208,7 +208,7 @@ extension MultiSet {
 extension MultiSet: CustomStringConvertible {
 	
 	public var description: String {
-		"MultiSet(\(_counts.description))"
+		"MultiSet(\(elementCounts.description))"
 	}
 	
 }
